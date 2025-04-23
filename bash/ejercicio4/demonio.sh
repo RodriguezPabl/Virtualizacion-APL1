@@ -49,7 +49,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Validaciones
+# Validaciones más específicas
 if [[ "$KILL" != true ]]; then
     if [[ -z "$DIRECTORIO" ]]; then
         echo "Falta el parámetro obligatorio: -d (directorio)" >&2
@@ -172,14 +172,20 @@ generar_backup() {
     fi
 
     # Monitorear nuevos archivos
-    while true; do
-        archivo=$(inotifywait -q -e create -e moved_to --format '%f' "$DIRECTORIO")
-        [[ -f "$DIRECTORIO/$archivo" ]] || continue
+    inotifywait -mq -e create -e moved_to --format '%f' "$DIRECTORIO" | while read -r archivo; do
+        full_path="$DIRECTORIO/$archivo"
+
+        for i in {1..30}; do
+            [[ -f "$full_path" ]] && break
+            sleep 0.1
+        done
+
+        [[ -f "$full_path" ]] || continue
 
         extension="${archivo##*.}"
         carpeta="$DIRECTORIO/$(echo "$extension" | tr '[:lower:]' '[:upper:]')"
         mkdir -p "$carpeta"
-        mv "$DIRECTORIO/$archivo" "$carpeta/"
+        mv "$full_path" "$carpeta/"
         ((contador++))
 
         if (( contador >= CANTIDAD )); then
