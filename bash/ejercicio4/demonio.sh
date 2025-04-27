@@ -49,18 +49,10 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Validaciones más específicas
+# Validaciones
 if [[ "$KILL" != true ]]; then
-    if [[ -z "$DIRECTORIO" ]]; then
-        echo "Falta el parámetro obligatorio: -d (directorio)" >&2
-        exit 1
-    fi
-    if [[ -z "$BACKUP" ]]; then
-        echo "Falta el parámetro obligatorio: -b (backup)" >&2
-        exit 1
-    fi
-    if [[ -z "$CANTIDAD" ]]; then
-        echo "Falta el parámetro obligatorio: -c (cantidad)" >&2
+    if [[ -z "$DIRECTORIO" || -z "$BACKUP" || -z "$CANTIDAD" ]]; then
+        echo "Parámetros faltantes: -d, -b, -c son obligatorios" >&2
         exit 1
     fi
     if ! [[ "$CANTIDAD" =~ ^[1-9][0-9]*$ ]]; then
@@ -73,9 +65,10 @@ fi
 DIRECTORIO=$(realpath "$DIRECTORIO" 2>/dev/null)
 BACKUP=$(realpath "$BACKUP" 2>/dev/null)
 
-# Archivo PID por directorio
+# Archivo PID y PGID
 HASH=$(echo "$DIRECTORIO" | md5sum | cut -d ' ' -f1)
 PID_FILE="/tmp/demonio_${HASH}.pid"
+PGID_FILE="/tmp/demonio_${HASH}.pgid"
 LOG_FILE="/tmp/backup_error_${HASH}.log"
 
 # Si es kill, intentar detener demonio
@@ -85,15 +78,15 @@ if [[ "$KILL" == true ]]; then
         exit 1
     fi
 
-    if [[ -f "$PID_FILE" ]]; then
-        PID=$(cat "$PID_FILE")
-        if ps -p "$PID" > /dev/null 2>&1; then
-            kill "$PID"
-            echo "Demonio detenido (PID $PID)."
+    if [[ -f "$PID_FILE" && -f "$PGID_FILE" ]]; then
+        PGID=$(cat "$PGID_FILE")
+        if kill -0 "-$PGID" 2>/dev/null; then
+            kill -- -"$PGID"
+            echo "Demonio detenido (PGID $PGID)."
         else
             echo "No se pudo detener el demonio. Puede que ya no esté activo." >&2
         fi
-        rm -f "$PID_FILE" "$LOG_FILE"
+        rm -f "$PID_FILE" "$PGID_FILE" "$LOG_FILE"
         exit 0
     else
         echo "No se encontró un proceso demonio para este directorio." >&2
@@ -101,7 +94,8 @@ if [[ "$KILL" == true ]]; then
     fi
 fi
 
-# Validar directorios existentes
+
+# Validar directorios
 if [[ ! -d "$DIRECTORIO" ]]; then
     echo "El directorio especificado no existe: $DIRECTORIO" >&2
     exit 1
@@ -112,15 +106,13 @@ if [[ ! -d "$BACKUP" ]]; then
     exit 1
 fi
 
-if ! command -v inotifywait >/dev/null 2>&1; then
-    echo "Error: 'inotifywait' no está instalado. Instalalo con: sudo apt install inotify-tools" >&2
-    exit 1
-fi
-
-if ! command -v zip &> /dev/null; then
-    echo "Error: el comando 'zip' no está instalado. Instalalo con: 'sudo apt install zip'."
-    exit 1
-fi
+# Comprobar comandos necesarios
+for cmd in inotifywait zip; do
+    if ! command -v "$cmd" &> /dev/null; then
+        echo "Error: el comando '$cmd' no está instalado. Instalalo." >&2
+        exit 1
+    fi
+done
 
 # Verificar si ya hay un demonio corriendo
 if [[ -f "$PID_FILE" ]]; then
@@ -129,7 +121,7 @@ if [[ -f "$PID_FILE" ]]; then
         echo "Ya hay un demonio ejecutándose para este directorio (PID $PID)." >&2
         exit 1
     else
-        rm -f "$PID_FILE" "$LOG_FILE"
+        rm -f "$PID_FILE" "$PGID_FILE" "$LOG_FILE"
     fi
 fi
 
@@ -152,7 +144,7 @@ generar_backup() {
     fi
 }
 
-# Lanzar demonio
+# Lanzar demonio en segundo plano
 (
     contador=0
 
@@ -195,5 +187,9 @@ generar_backup() {
     done
 ) &
 
+# Guardar PID y PGID
 echo $! > "$PID_FILE"
-echo "Demonio iniciado correctamente. PID: $!"
+PGID=$(ps -o pgid= -p $! | tr -d ' ')
+echo "$PGID" > "$PGID_FILE"
+
+echo "Demonio iniciado correctamente. PID: $! PGID: $PGID"
