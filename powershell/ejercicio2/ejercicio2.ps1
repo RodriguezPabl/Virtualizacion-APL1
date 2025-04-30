@@ -29,6 +29,14 @@ Get-Help ./ejercicio2.ps1
 ./ejercicio2.ps1 -trasponer -matriz lote1/matriz.txt
 #>
 
+############### INTEGRANTES ###############
+###     Justiniano, Máximo              ###
+###     Mallia, Leandro                 ###
+###     Maudet, Alejandro               ###
+###     Naspleda, Julián                ###
+###     Rodriguez, Pablo                ###
+###########################################
+
 param (
     [Parameter(Mandatory=$true)]
     [string]$matriz,

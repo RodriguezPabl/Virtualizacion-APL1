@@ -1,5 +1,13 @@
 #!/bin/bash
 
+############### INTEGRANTES ###############
+###     Justiniano, Máximo              ###
+###     Mallia, Leandro                 ###
+###     Maudet, Alejandro               ###
+###     Naspleda, Julián                ###
+###     Rodriguez, Pablo                ###
+###########################################
+
 API_URL="https://www.fruityvice.com/api/fruit"
 CACHE_FILE="/tmp/fruit_cache.json"
 

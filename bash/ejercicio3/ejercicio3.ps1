@@ -20,6 +20,14 @@ Lista de extensiones de archivo en las que se buscarán las palabras (obligatori
 
 #>
 
+############### INTEGRANTES ###############
+###     Justiniano, Máximo              ###
+###     Mallia, Leandro                 ###
+###     Maudet, Alejandro               ###
+###     Naspleda, Julián                ###
+###     Rodriguez, Pablo                ###
+###########################################
+
 param (
     [Parameter(Mandatory = $true)]
     [string]$directorio,

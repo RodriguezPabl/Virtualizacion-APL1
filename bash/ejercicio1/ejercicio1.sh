@@ -1,5 +1,13 @@
 #!/bin/bash
 
+############### INTEGRANTES ###############
+###     Justiniano, Máximo              ###
+###     Mallia, Leandro                 ###
+###     Maudet, Alejandro               ###
+###     Naspleda, Julián                ###
+###     Rodriguez, Pablo                ###
+###########################################
+
 # --- Variables globales ---
 DIRECTORIO=""
 SALIDA=""

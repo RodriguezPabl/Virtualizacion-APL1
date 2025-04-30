@@ -1,5 +1,13 @@
 #!/bin/bash
 
+############### INTEGRANTES ###############
+###     Justiniano, Máximo              ###
+###     Mallia, Leandro                 ###
+###     Maudet, Alejandro               ###
+###     Naspleda, Julián                ###
+###     Rodriguez, Pablo                ###
+###########################################
+
 function mostrar_ayuda() {
     echo "Uso: $0 -d <directorio> -p <palabra1,palabra2,...> -a <ext1,ext2,...>"
     echo

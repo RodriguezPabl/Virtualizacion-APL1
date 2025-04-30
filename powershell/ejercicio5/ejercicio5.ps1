@@ -18,6 +18,14 @@ Uno o más nombres de frutas a consultar (en inglés).
 El archivo de caché se elimina al finalizar el script, incluso si ocurre un error.
 #>
 
+############### INTEGRANTES ###############
+###     Justiniano, Máximo              ###
+###     Mallia, Leandro                 ###
+###     Maudet, Alejandro               ###
+###     Naspleda, Julián                ###
+###     Rodriguez, Pablo                ###
+###########################################
+
 [CmdletBinding()]
 param (
     [Parameter(Mandatory = $false)]

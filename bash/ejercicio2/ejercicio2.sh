@@ -1,5 +1,13 @@
 #!/bin/bash
 
+############### INTEGRANTES ###############
+###     Justiniano, Máximo              ###
+###     Mallia, Leandro                 ###
+###     Maudet, Alejandro               ###
+###     Naspleda, Julián                ###
+###     Rodriguez, Pablo                ###
+###########################################
+
 # Variables para manejo de errores
 error_log="/tmp/matrix_script_error.log"
 trap 'rm -f /tmp/matrix_script.tmp' EXIT

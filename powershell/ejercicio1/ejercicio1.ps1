@@ -22,6 +22,14 @@ Muestra la salida por pantalla en lugar de generar un archivo JSON.
 .\ejercicio1.ps1 -directorio ./lote1 -archivo ./salida.json
 #>
 
+############### INTEGRANTES ###############
+###     Justiniano, Máximo              ###
+###     Mallia, Leandro                 ###
+###     Maudet, Alejandro               ###
+###     Naspleda, Julián                ###
+###     Rodriguez, Pablo                ###
+###########################################
+
 [CmdletBinding(DefaultParameterSetName = 'archivo')]
 param (
     [Parameter(Mandatory = $true, Position = 0)]
