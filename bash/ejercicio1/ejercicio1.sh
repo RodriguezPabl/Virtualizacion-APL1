@@ -8,36 +8,36 @@
 ###     Rodriguez, Pablo                ###
 ###########################################
 
-# --- Variables globales ---
+# ------------------ Inicializacion variables globales ------------------
 DIRECTORIO=""
 SALIDA=""
 MOSTRAR_POR_PANTALLA=false
 TEMP_FILE="/tmp/temp_$$.json"
 
-# --- Limpieza de archivos temporales ---
+# ------------------ Limpieza de los archivos temporales ------------------
 function limpiar() {
     [[ -f "$TEMP_FILE" ]] && rm -f "$TEMP_FILE"
     [[ -f "$TEMP_FILE.data" ]] && rm -f "$TEMP_FILE.data"
 }
 trap limpiar EXIT
 
-# --- Función de ayuda ---
+# ------------------ Funcion de ayuda ------------------
 function mostrar_ayuda() {
     echo "Uso: $0 -d <directorio> [-a <archivo_salida> | -p]"
     echo ""
-    echo "  -d, --directorio   Ruta del directorio con archivos CSV a leer."
+    echo "  -d, --directorio   Ruta del directorio con archivos .CSV a leer."
     echo "  -a, --archivo      Ruta del archivo JSON de salida (ruta completa incluyendo el nombre del archivo)."
     echo "  -p, --pantalla     Muestra el resultado por pantalla (en formato JSON)."
     echo "  -h, --help         Muestra esta ayuda."
 }
 
-# --- Validación de parámetros ---
+# ------------------ Validacion de parametros ------------------
 function validar_parametros() {
     while [[ $# -gt 0 ]]; do
         case "$1" in
             -d|--directorio)
                 if [[ -z "$2" || "$2" == -* ]]; then
-                    echo "Error: el parámetro -d requiere una ruta como argumento."
+                    echo "Error: el parametro -d requiere una ruta como argumento, esta debe ser la ruta del directorio con los archivos .CSV a leer."
                     exit 1
                 fi
                 DIRECTORIO="$2"
@@ -45,7 +45,7 @@ function validar_parametros() {
                 ;;
             -a|--archivo)
                 if [[ -z "$2" || "$2" == -* ]]; then
-                    echo "Error: el parámetro -a requiere una ruta de archivo como argumento."
+                    echo "Error: el parametro -a requiere una ruta de archivo como argumento."
                     exit 1
                 fi
                 SALIDA="$2"
@@ -60,7 +60,7 @@ function validar_parametros() {
                 exit 0
                 ;;
             *)
-                echo "Error: parámetro desconocido: $1"
+                echo "Error: parametro desconocido: $1"
                 mostrar_ayuda
                 exit 1
                 ;;
@@ -101,8 +101,7 @@ function validar_parametros() {
     fi
 }
 
-
-# --- Procesar archivos CSV ---
+# ------------------ Funcion para procesar los archivos CSV ------------------
 function procesar_csv() {
     TMP_RAW="${TEMP_FILE}.raw"
 
@@ -124,7 +123,7 @@ function procesar_csv() {
     mv "$TMP_RAW" "$TEMP_FILE.data"
 }
 
-# --- Calcular estadísticas y generar JSON ---
+# ------------------ Funcion para calcular estadisticas y generar JSON ------------------
 function generar_json() {
     echo '{ "fechas": [' > "$TEMP_FILE"
 
@@ -156,9 +155,9 @@ function generar_json() {
             fi
 
             echo "        \"$ubic\": {" >> "$TEMP_FILE"
-            echo "          \"Promedio\": $promedio," >> "$TEMP_FILE"
+            echo "          \"Min\": $min," >> "$TEMP_FILE"
             echo "          \"Max\": $max," >> "$TEMP_FILE"
-            echo "          \"Min\": $min" >> "$TEMP_FILE"
+            echo "          \"Promedio\": $promedio" >> "$TEMP_FILE"
             echo "        }," >> "$TEMP_FILE"
         done
 
@@ -174,7 +173,7 @@ function generar_json() {
     rm -f "$TEMP_FILE.data"
 }
 
-# --- Mostrar o guardar resultado ---
+# ------------------ Mostrar o guardar resultado ------------------
 function salida() {
     if $MOSTRAR_POR_PANTALLA; then
         cat "$TEMP_FILE"
@@ -184,7 +183,8 @@ function salida() {
     fi
 }
 
-# --- Ejecución ---
+# ------------------ Ejecucion ------------------
+
 validar_parametros "$@"
 procesar_csv
 generar_json
