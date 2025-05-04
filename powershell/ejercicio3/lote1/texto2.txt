@@ -1,0 +1,5 @@
+Desarrollar un script que permita realizar producto escalar y trasposición de matrices. La entrada de la matriz
+al script se realizará mediante un archivo de texto plano. La salida se guardará en otro archivo que se llamará
+“salida.nombreArchivoEntrada” y se generará en el mismo directorio donde se encuentre el archivo de la
+matriz que se está procesando (puede ser cualquier directorio, considerar que no necesariamente es donde
+se ejecuta el script). 

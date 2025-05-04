@@ -1,0 +1,5 @@
+Desarrollar un script que identifique la cantidad de ocurrencias de determinadas palabras en determinados
+archivos dentro de un directorio (incluyendo los subdirectorios). Para esto, se reciban por parámetro tanto
+la lista de palabras a buscar, como las extensiones de archivos dónde buscar dichas palabras.
+La salida del script debe ser un listado ordenado de las palabras con el contador de veces que fue
+detectada

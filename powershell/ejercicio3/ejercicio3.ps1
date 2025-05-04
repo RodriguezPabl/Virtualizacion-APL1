@@ -16,7 +16,11 @@ Lista de palabras a contabilizar (obligatorio).
 Lista de extensiones de archivo en las que se buscarán las palabras (obligatorio).
 
 .EXAMPLE
-.\ejercicio3.ps1 -directorio .\ -palabras if,hola,else -archivos txt
+.\ejercicio3.ps1 -directorio . -palabras script,automatizar -archivos txt
+.EXAMPLE
+.\ejercicio3.ps1 -palabras script,automatizar -directorio ./lote1 -archivos txt
+.EXAMPLE
+.\ejercicio3.ps1 -archivos txt -palabras palabras,buscar -directorio ./lote2
 
 #>
 

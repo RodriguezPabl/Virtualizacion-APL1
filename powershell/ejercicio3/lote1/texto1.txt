@@ -1,0 +1,8 @@
+Se quiere automatizar el cálculo de temperatura registrado en las diferentes estaciones climáticas ubicadas
+en la provincia de Buenos Aires. Para poder realizar esto, existe un proceso servidor que registra las
+mediciones que envía cada estación y las registra en un archivo para mantener el registro diario. Cada una
+de estas estaciones envía periódicamente a cada hora la medición de la temperatura y debido a que puede
+haber problemas de conexión, puede que el mensaje nunca llegue al servidor.
+Tenga en cuenta que el servidor genera los archivos por día, indicando en el nombre del archivo la fecha de
+procesamiento y puede suceder que haya recibido un mensaje de otro día por demoras en la transmisión o
+error en el dispositivo
