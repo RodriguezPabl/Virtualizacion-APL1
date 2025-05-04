@@ -26,6 +26,12 @@
 .PARAMETER kill
     Finaliza el demonio en ejecución para el directorio especificado.
 
+.EXAMPLE
+    ./demonio.ps1 -directorio ./descargas -backup ./backup -cantidad 3
+    
+.EXAMPLE
+    ./demonio.ps1 -directorio ./descargas -kill
+
 .PARAMETER daemonInterno
     Flag interno utilizado por el demonio lanzado en segundo plano. No usar manualmente.
 #>
@@ -38,7 +44,7 @@ param(
     [string]$backup,
 
     [Parameter(Mandatory = $false)]
-    [int]$cantidad = 5,
+    [int]$cantidad,
 
     [Parameter(Mandatory = $false)]
     [switch]$kill,
@@ -66,6 +72,23 @@ function Get-PIDFile {
     $hash = Get-Hash $dir
     $tmpDir = if ($env:TEMP) { $env:TEMP } else { "/tmp" }
     return Join-Path -Path $tmpDir -ChildPath "demonio_$hash.pid"
+}
+
+# Validaciones previas
+if ($kill) {
+    if (-not (Test-Path $directorio)) {
+        Mostrar-Error "Debe especificar un directorio válido al usar -kill."
+    }
+} else {
+    if (-not (Test-Path $directorio)) {
+        Mostrar-Error "Debe especificar un directorio válido."
+    }
+    if (-not $backup) {
+        Mostrar-Error "El parámetro -backup es obligatorio si no se usa -kill."
+    }
+    if ($cantidad -le 0) {
+        Mostrar-Error "El parámetro -cantidad debe ser mayor a cero."
+    }
 }
 
 # Resolución de rutas absolutas
