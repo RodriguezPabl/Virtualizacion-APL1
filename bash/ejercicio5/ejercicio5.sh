@@ -11,6 +11,13 @@
 API_URL="https://www.fruityvice.com/api/fruit"
 CACHE_FILE="/tmp/fruit_cache.json"
 
+# Verificar si jq está instalado
+if ! command -v jq >/dev/null 2>&1; then
+    echo "Error: La herramienta 'jq' no está instalada. Por favor instálala e intenta nuevamente." >&2
+    echo "En Ubuntu/Debian: sudo apt install jq" >&2
+    exit 1
+fi
+
 # Función para mostrar la ayuda
 show_help() {
     echo "Uso: $0 [OPCIONES]"
