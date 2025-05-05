@@ -76,6 +76,9 @@ function Get-PIDFile {
 
 # Validaciones previas
 if ($kill) {
+    if ($backup -or $cantidad -or $daemonInterno) {
+        Mostrar-Error "Cuando se usa -kill, no se deben usar otros parámetros además de -directorio."
+    }
     if (-not (Test-Path $directorio)) {
         Mostrar-Error "Debe especificar un directorio válido al usar -kill."
     }
