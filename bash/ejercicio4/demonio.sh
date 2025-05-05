@@ -1,5 +1,13 @@
 #!/bin/bash
 
+############### INTEGRANTES ###############
+###     Justiniano, Máximo              ###
+###     Mallia, Leandro                 ###
+###     Maudet, Alejandro               ###
+###     Naspleda, Julián                ###
+###     Rodriguez, Pablo                ###
+###########################################
+
 # Mostrar ayuda
 mostrar_ayuda() {
     echo "Uso: $0 -d DIRECTORIO -b BACKUP -c CANTIDAD [-k]"
@@ -50,16 +58,30 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Validaciones
-if [[ "$KILL" != true ]]; then
-    if [[ -z "$DIRECTORIO" || -z "$BACKUP" || -z "$CANTIDAD" ]]; then
-        echo "Parámetros faltantes: -d, -b, -c son obligatorios" >&2
+if [[ "$KILL" == true ]]; then
+    # Si se usa -k, solo se permite junto con -d, nada más
+    if [[ -z "$DIRECTORIO" ]]; then
+        echo "Error: El parámetro -k requiere que se especifique también -d." >&2
         exit 1
     fi
+    if [[ -n "$BACKUP" || -n "$CANTIDAD" ]]; then
+        echo "Error: Cuando se usa -k, solo se permite usar también -d. No use -b ni -c." >&2
+        exit 1
+    fi
+else
+    # Si no se usa -k, entonces -d, -b y -c son obligatorios
+    if [[ -z "$DIRECTORIO" || -z "$BACKUP" || -z "$CANTIDAD" ]]; then
+        echo "Error: Los parámetros -d, -b y -c son obligatorios si no se usa -k." >&2
+        exit 1
+    fi
+
     if ! [[ "$CANTIDAD" =~ ^[1-9][0-9]*$ ]]; then
         echo "El parámetro -c (cantidad) debe ser un número entero positivo." >&2
         exit 1
     fi
 fi
+
+
 
 # Convertir rutas relativas a absolutas
 DIRECTORIO=$(realpath "$DIRECTORIO" 2>/dev/null)
