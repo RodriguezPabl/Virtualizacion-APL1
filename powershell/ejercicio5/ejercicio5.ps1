@@ -44,7 +44,12 @@ if (-not $id -and -not $name) {
 }
 
 # Ruta de caché temporal en /tmp
-$TempDir = "/tmp"
+if ($IsWindows) {
+    $TempDir = $env:TEMP
+} else {
+    $TempDir = "/tmp"
+}
+
 $CachePath = Join-Path $TempDir "fruit_cache_$(Get-Random).json"
 
 function Init-Cache {
