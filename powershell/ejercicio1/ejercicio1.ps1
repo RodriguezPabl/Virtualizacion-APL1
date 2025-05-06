@@ -63,8 +63,15 @@ function Limpiar {
 }
 
 # --------------------------------- Inicializacion ---------------------------------
-$tempFilePath = "/tmp/ps_temp_$PID.json"
-$tempRawData = "/tmp/ps_temp_$PID.raw"
+if ($IsWindows) {
+    $tempDir = $env:TEMP
+} else {
+    $tempDir = "/tmp"
+}
+
+$tempFilePath = Join-Path $tempDir "ps_temp_$PID.json"
+$tempRawData = Join-Path $tempDir "ps_temp_$PID.raw"
+
 
 try {
     ValidarRuta $directorio
@@ -82,7 +89,7 @@ try {
     # --------------------------------- Procesar archivos ---------------------------------
     Get-ChildItem -Path $directorio -Filter *.csv | ForEach-Object {
         $csvFile = $_.FullName
-        Write-Host "Procesando archivo: $csvFile"
+        #Write-Host "Procesando archivo: $csvFile"
 
         Get-Content $csvFile | ForEach-Object {
             $linea = $_.Trim()
