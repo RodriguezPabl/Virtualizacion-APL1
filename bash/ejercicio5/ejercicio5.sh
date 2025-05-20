@@ -36,15 +36,19 @@ show_help() {
 # Crear el archivo de caché si no existe
 touch "$CACHE_FILE"
 
+if [[ ! -s "$CACHE_FILE" ]]; then
+    echo "{}" > "$CACHE_FILE"
+fi
+
 # Función para obtener y cachear datos
 get_fruit_info() {
     local key="$1"
     local query="$2"
 
-    # Buscar en caché
-    cached=$(jq -r --arg key "$key" '.[$key] // empty' "$CACHE_FILE")
-    if [[ -n "$cached" ]]; then
-        echo "$cached"
+# Buscar en caché
+    cached=$(jq -c --arg key "$key" 'if has($key) then .[$key] else null end' "$CACHE_FILE")
+    if [[ "$cached" != "null" ]]; then
+        echo "$cached" | jq
         return
     fi
 
@@ -105,6 +109,3 @@ for name in "${NAMES[@]}"; do
     result=$(get_fruit_info "$name_trimmed" "$name_trimmed")
     [[ -n "$result" ]] && echo "$result"
 done
-
-# Borrar el archivo de caché al finalizar el script
-trap 'rm -f "$CACHE_FILE"' EXIT
