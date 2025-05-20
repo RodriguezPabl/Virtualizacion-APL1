@@ -15,7 +15,7 @@ Uno o más nombres de frutas a consultar (en inglés).
 .\ejercicio5.ps1 -id 1,2 -name banana,orange
 
 .NOTES
-El archivo de caché se elimina al finalizar el script, incluso si ocurre un error.
+El archivo de caché se mantiene entre ejecuciones y se elimina manualmente si se desea.
 #>
 
 ############### INTEGRANTES ###############
@@ -43,21 +43,26 @@ if (-not $id -and -not $name) {
     exit 1
 }
 
-# Ruta de caché temporal en /tmp
+# Ruta de caché temporal en /tmp o en TEMP según el sistema
 if ($IsWindows) {
     $TempDir = $env:TEMP
 } else {
     $TempDir = "/tmp"
 }
 
-$CachePath = Join-Path $TempDir "fruit_cache_$(Get-Random).json"
+# Usamos un nombre fijo para el archivo de caché
+$CachePath = Join-Path $TempDir "fruit_cache.json"
 
 function Init-Cache {
-    '{}' | Out-File -Encoding utf8 $CachePath
+    # Si el archivo de caché no existe, lo inicializamos como un objeto vacío
+    if (-not (Test-Path $CachePath)) {
+        '{}' | Out-File -Encoding utf8 $CachePath
+    }
     return Get-Content $CachePath | ConvertFrom-Json
 }
 
 function Save-Cache ($cache) {
+    # Guardar el caché en el archivo
     $cache | ConvertTo-Json -Depth 5 | Out-File -Encoding utf8 $CachePath
 }
 
@@ -68,11 +73,13 @@ function Get-FruitInfo {
         [ref]$cache
     )
 
+    # Verificar si ya existe en el caché
     if ($cache.Value.PSObject.Properties.Name -contains $key) {
         return $cache.Value.$key | ConvertTo-Json -Compress
     }
 
     try {
+        # Si no está en el caché, hacer la solicitud a la API
         $response = Invoke-RestMethod "https://www.fruityvice.com/api/fruit/$query" -ErrorAction Stop
     } catch {
         Write-Warning "Error al consultar '$query'. Verifica que el nombre o ID sea válido o tu conexión a Internet."
@@ -84,6 +91,7 @@ function Get-FruitInfo {
         return
     }
 
+    # Formatear la respuesta y guardarla en el caché
     $parsed = [PSCustomObject]@{
         id             = $response.id
         name           = $response.name
@@ -100,8 +108,10 @@ function Get-FruitInfo {
 
 # MAIN
 try {
+    # Inicializar el caché
     $cache = Init-Cache
 
+    # Buscar por ID
     foreach ($i in $id) {
         $key = "$i"
         $result = Get-FruitInfo -key $key -query $i -cache ([ref]$cache)
@@ -110,6 +120,7 @@ try {
         }
     }
 
+    # Buscar por nombre
     foreach ($n in $name) {
         $key = $n.Trim().ToLower()
         $result = Get-FruitInfo -key $key -query $n -cache ([ref]$cache)
@@ -118,14 +129,13 @@ try {
         }
     }
 
+    # Guardar el caché actualizado
     Save-Cache $cache
 }
 catch {
     Write-Error "Error inesperado: $_.Message"
 }
 finally {
-    # Borrar el archivo de caché al finalizar el script
-    if (Test-Path $CachePath) {
-        Remove-Item -Path $CachePath -ErrorAction SilentlyContinue
-    }
+    # El caché persiste entre ejecuciones. Si deseas eliminarlo manualmente, puedes borrar el archivo.
+    # Remove-Item -Path $CachePath -ErrorAction SilentlyContinue
 }
