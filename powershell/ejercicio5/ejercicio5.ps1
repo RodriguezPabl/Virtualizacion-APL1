@@ -135,7 +135,3 @@ try {
 catch {
     Write-Error "Error inesperado: $_.Message"
 }
-finally {
-    # El caché persiste entre ejecuciones. Si deseas eliminarlo manualmente, puedes borrar el archivo.
-    # Remove-Item -Path $CachePath -ErrorAction SilentlyContinue
-}
